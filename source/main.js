@@ -65,8 +65,6 @@ function start(stdin) {
 	let result
 	if (program.args.length > 0) {
 		result = evaluate(program.args.join(` `))
-	} else if (stdin && typeof stdin === `string`) {
-		result = evaluate(stdin)
 	} else if (stdin) {
 		result = stdin
 	} else {
