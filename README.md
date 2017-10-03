@@ -28,8 +28,10 @@ Add a field to a JSON file on the fly
 js 'stdin.foo = "bar", stdin' < in.json > out.json
 ```
 
-Promises & streams are resolved automatically:
+Promises & streams are resolved automatically
 
 ```bash
 js 'new Promise(resolve => require("http").get("http://google.com", resolve))'
 ```
+
+`await` can be used in the calculated expression if it is supported by node.

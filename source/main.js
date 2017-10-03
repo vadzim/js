@@ -89,11 +89,16 @@ function start(stdin) {
 }
 
 function evaluate(formula) {
+	let async = ``
 	try {
-		return (0, eval)(`(${formula})`)
+		eval(`(async function() {})`)
+		async = `async`
+	} catch (_error) {}
+	try {
+		return (0, eval)(`(${async} function(){ return (\n${formula}\n) }())`)
 	} catch (e) {
 		if (e instanceof SyntaxError) {
-			return (0, eval)(formula)
+			return (0, eval)(`(${async} function(){\n${formula}\n}())`)
 		} else {
 			throw e
 		}
