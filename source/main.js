@@ -17,7 +17,9 @@ if (process.stdin.isTTY) {
 	start(``)
 } else {
 	process.stdin.resume()
-	process.stdin.setEncoding(program.binary ? `binary` : `utf8`)
+	if (!program.binary) {
+		process.stdin.setEncoding(`utf8`)
+	}
 
 	if (program.stream) {
 		start(process.stdin)
@@ -106,16 +108,21 @@ function print(result) {
 
 	if (result instanceof stream.Readable) {
 		result.pipe(output)
+	} else if (result instanceof Buffer) {
+		output.end(result)
 	} else {
 		try {
-			if (typeof result == `undefined`) {
-				output.write(`undefined\n`)
-			} else if (typeof result == `string`) {
-				output.write(`${result}\n`)
-			} else if (program.ugly) {
-				output.write(JSON.stringify(result))
+			let text
+			if (result === undefined) {
+				text = `undefined`
+			} else if (typeof result === `string`) {
+				text = result
 			} else {
-				output.write(`${JSON.stringify(result, null, 2)}\n`)
+				text = JSON.stringify(result, undefined, program.ugly ? undefined : 2)
+			}
+			output.write(text)
+			if (!program.ugly && text[text.length - 1] !== `\n`) {
+				output.write(`\n`)
 			}
 		} catch (error) {
 			output.emit(`error`, error)
