@@ -1,16 +1,37 @@
 {
-  "name": "js",
+  "name": "@vadzim/js",
+  "version": "0.3.0",
   "description": "A better `node -p`.",
-  "author": "Marco Aurelio <thecoreh@gmail.com>",
-  "version": "0.2.1",
+  "repository": "https://github.com/vadzim/js",
+  "author": "Vadzim Zieńka <developer@vadzim.info>",
+  "initial_author": "Marco Aurelio <thecoreh@gmail.com>",
+  "contributors": [],
   "bin": {
     "js": "./bin/js"
+  },
+  "scripts": {
+    "build": "babel source --out-dir distr",
+    "prettier": "prettier --write $(cat .prettier) 'source/**/*.js' '*.js'",
+    "prepare": "npm run build",
+    "test": "jest",
+    "go": "npm run prettier && npm run build && npm run test"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vadzim/js/issues"
   },
   "dependencies": {
     "commander": "~1.1.1"
   },
-  "engines": {
-    "node": ">=0.10"
-  },
-  "engineStrict": true
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-idx": "^2.0.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "idx": "^1.5.0",
+    "jest": "^20.0.4",
+    "prettier": "^1.5.3"
+  }
 }

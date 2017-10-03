@@ -1,0 +1,18 @@
+{
+	presets: [
+		"env",
+		"flow",
+		"stage-0",
+	],
+	plugins: [
+		"add-module-exports",
+		"idx",
+	],
+	"env": {
+		"development": {
+			ignore: [
+				"**/*test.js",
+			]
+		}
+	}
+}

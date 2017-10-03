@@ -1,3 +1,8 @@
+==================
+
+  * --stream to process stdin as stream, not as string.
+  * --binary to let stdin be binary.
+
 0.2.0 / 2017-10-02
 ==================
 
