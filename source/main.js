@@ -45,6 +45,7 @@ if (process.stdin.isTTY) {
 }
 
 function start(stdin) {
+	// expose some globals
 	global.stdin = stdin
 	global.require = require
 
