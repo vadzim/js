@@ -1,4 +1,5 @@
 import fs from "fs"
+import os from "os"
 import path from "path"
 import program from "commander"
 import stream from "stream"
@@ -11,6 +12,7 @@ program
 	.option(`-b, --binary`, `let stdin to be binary`)
 	.option(`-u, --ugly`, `ugly output (no indentation)`)
 	.option(`-s, --silent`, `do not print result to standard output`)
+	.option(`-n, --no_config`, `do not load $HOME/.js module on startup`)
 	.parse(process.argv)
 
 if (process.stdin.isTTY) {
@@ -45,6 +47,15 @@ if (process.stdin.isTTY) {
 }
 
 function start(stdin) {
+	if (!program.no_config) {
+		if (os.homedir) {
+			const moduleName = path.join(os.homedir(), `.js`)
+			if (fs.existsSync(moduleName)) {
+				require(moduleName)
+			}
+		}
+	}
+
 	// expose some globals
 	global.stdin = stdin
 	global.require = require

@@ -3,6 +3,7 @@
 
   * --stream to process stdin as stream, not as string.
   * --binary to let stdin be binary.
+  * Load $HOME/.js module on startup. --no_config to disable this.
 
 0.2.0 / 2017-10-02
 ==================
