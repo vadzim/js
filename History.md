@@ -1,3 +1,4 @@
+0.3.0 / 2017-10-03
 ==================
 
   * --stream to process stdin as stream, not as string.

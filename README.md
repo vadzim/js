@@ -27,3 +27,9 @@ Add a field to a JSON file on the fly
 ```bash
 js 'stdin.foo = "bar", stdin' < in.json > out.json
 ```
+
+Promises & streams are resolved automatically:
+
+```bash
+js 'new Promise(resolve => require("http").get("http://google.com", resolve))'
+```
