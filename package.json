@@ -13,7 +13,7 @@
   "initial_author": "Marco Aurelio <thecoreh@gmail.com>",
   "author": "Vadzim Zieńka <developer@vadzim.info>",
   "scripts": {
-    "build": "babel source --out-dir distr && cd distr && (for f in $(find | grep -E '.js$'); do cp ../source/$f $f.flow; done) && cd ..",
+    "build": "rm distr/*; babel source --out-dir distr && cd distr && (for f in $(find | grep -E '.js$'); do if grep @flow ../source/$f >/dev/null; then cp ../source/$f $f.flow; fi; done) && cd ..",
     "prettier": "prettier --write $(cat .prettier) 'source/**/*.js' 'example/**/*.js' '*.js'",
     "prepare": "npm run build",
     "test": "jest",
@@ -30,8 +30,8 @@
     "babel-preset-stage-0": "^6.24.1",
     "flow-bin": "^0.56.0",
     "idx": "^1.5.0",
-    "jest": "^20.0.4",
-    "prettier": "^1.5.3"
+    "jest": "^21.2.1",
+    "prettier": "^1.7.4"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
