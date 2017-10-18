@@ -113,7 +113,7 @@ function print(result) {
 
 	const output = new stream.PassThrough()
 
-	output.on("end", () => process.exit(result ? 0 : 1))
+	output.on("end", () => process.exit(result || result === undefined ? 0 : 1))
 
 	output.on("error", onError)
 
