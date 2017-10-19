@@ -57,7 +57,7 @@ function start(stdin) {
 	}
 
 	// expose some globals
-	global.stdin = stdin
+	global.$ = global.stdin = stdin
 	global.require = require
 
 	// expose environment variables as globals preceded with $

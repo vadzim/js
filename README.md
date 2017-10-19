@@ -8,6 +8,8 @@
 js <javascript>
 ```
 
+`stdin` variable can be used to access input. `$` is a synonym for `stdin`.
+
 ## Examples
 
 Using math
@@ -25,7 +27,7 @@ js stdin.version < package.json
 Add a field to a JSON file on the fly
 
 ```bash
-js 'stdin.foo = "bar", stdin' < in.json > out.json
+js '$.foo = "bar", $' < in.json > out.json
 ```
 
 Promises & streams are resolved automatically
