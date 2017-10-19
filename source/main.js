@@ -3,6 +3,7 @@ import os from "os"
 import path from "path"
 import program from "commander"
 import stream from "stream"
+import _ from "lodash"
 
 program
 	.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")).version)
@@ -59,6 +60,7 @@ function start(stdin) {
 	// expose some globals
 	global.$ = global.stdin = stdin
 	global.require = require
+	global._ = _
 
 	// expose environment variables as globals preceded with $
 	for (const name in process.env) {
