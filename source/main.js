@@ -113,6 +113,44 @@ function evaluate(formula) {
 	}
 }
 
+function stringifyArrayStream(mapper, tab) {
+	if (typeof tab === "number") {
+		tab = new Array(tab + 1).join(" ")
+	}
+	let first = true
+	const result = new stream.Transform({
+		objectMode: true,
+		transform(data, encoding, cb) {
+			if (first) {
+				first = false
+			} else {
+				this.push(",")
+			}
+			if (tab) {
+				this.push("\n")
+			}
+			let text = JSON.stringify(data, mapper, tab)
+			if (tab) {
+				text = text.replace(/^/gm, "  ")
+			}
+			this.push(text)
+			cb()
+		},
+		flush(cb) {
+			if (tab && !first) {
+				this.push("\n")
+			}
+			this.push("]")
+			if (tab) {
+				this.push("\n")
+			}
+			cb()
+		},
+	})
+	result.push("[")
+	return result
+}
+
 async function print(result) {
 	try {
 		result = await result
@@ -130,7 +168,11 @@ async function print(result) {
 		}
 
 		if (result instanceof stream.Readable) {
-			result.pipe(output)
+			if (!result._readableState.objectMode) {
+				result.pipe(output)
+			} else {
+				result.pipe(stringifyArrayStream(undefined, program.ugly ? undefined : 2)).pipe(output)
+			}
 		} else if (result instanceof Buffer) {
 			output.end(result)
 		} else if (
@@ -141,30 +183,12 @@ async function print(result) {
 					!(result instanceof String) &&
 					!Array.isArray(result)))
 		) {
-			output.write("[")
-			let first = true
+			const stringifier = stringifyArrayStream(undefined, program.ugly ? undefined : 2)
+			stringifier.pipe(output)
 			for await (const data of result) {
-				if (first) {
-					first = false
-				} else {
-					output.write(",")
-				}
-				if (!program.ugly) {
-					output.write("\n")
-				}
-				let text = JSON.stringify(data, undefined, program.ugly ? undefined : 2)
-				if (!program.ugly) {
-					text = text.replace(/^/gm, "  ")
-				}
-				output.write(text)
+				await new Promise(resolve => stringifier.write(data, resolve))
 			}
-			if (!program.ugly) {
-				output.write("\n")
-			}
-			output.write("]")
-			if (!program.ugly) {
-				output.write("\n")
-			}
+			stringifier.end()
 		} else {
 			try {
 				let text
