@@ -16,6 +16,12 @@ program
 	.option("-n, --no_config", "do not load $HOME/.js module on startup")
 	.parse(process.argv)
 
+// export babel symbols to global Symbol
+if (eval("typeof Symbol") !== "undefined" && !eval("Symbol.asyncIterator") && Symbol.asyncIterator) {
+	const x = Symbol.asyncIterator
+	eval('Object.defineProperty(Symbol,"asyncIterator",{value:x,configurable:true,writable: true})')
+}
+
 if (process.stdin.isTTY) {
 	start("")
 } else {
@@ -107,47 +113,82 @@ function evaluate(formula) {
 	}
 }
 
-function print(result) {
-	if (result != null && typeof result === "object" && typeof result.then === "function") {
-		result.then(print, onError)
-		return
-	}
+async function print(result) {
+	try {
+		result = await result
 
-	const output = new stream.PassThrough()
+		const output = new stream.PassThrough()
 
-	output.on("end", () => process.exit(result || result === undefined ? 0 : 1))
+		output.on("end", () => process.exit(result || result === undefined ? 0 : 1))
 
-	output.on("error", onError)
+		output.on("error", onError)
 
-	if (!program.silent) {
-		output.pipe(process.stdout)
-	} else {
-		output.resume()
-	}
+		if (!program.silent) {
+			output.pipe(process.stdout)
+		} else {
+			output.resume()
+		}
 
-	if (result instanceof stream.Readable) {
-		result.pipe(output)
-	} else if (result instanceof Buffer) {
-		output.end(result)
-	} else {
-		try {
-			let text
-			if (result === undefined) {
-				text = "undefined"
-			} else if (typeof result === "string") {
-				text = result
-			} else {
-				text = JSON.stringify(result, undefined, program.ugly ? undefined : 2)
+		if (result instanceof stream.Readable) {
+			result.pipe(output)
+		} else if (result instanceof Buffer) {
+			output.end(result)
+		} else if (
+			result &&
+			(result[Symbol.asyncIterator] ||
+				(result[Symbol.iterator] &&
+					typeof result !== "string" &&
+					!(result instanceof String) &&
+					!Array.isArray(result)))
+		) {
+			output.write("[")
+			let first = true
+			for await (const data of result) {
+				if (first) {
+					first = false
+				} else {
+					output.write(",")
+				}
+				if (!program.ugly) {
+					output.write("\n")
+				}
+				let text = JSON.stringify(data, undefined, program.ugly ? undefined : 2)
+				if (!program.ugly) {
+					text = text.replace(/^/gm, "  ")
+				}
+				output.write(text)
 			}
-			output.write(text)
-			if (!program.ugly && text[text.length - 1] !== "\n") {
+			if (!program.ugly) {
 				output.write("\n")
 			}
-		} catch (error) {
-			output.emit("error", error)
-		} finally {
-			output.end()
+			output.write("]")
+			if (!program.ugly) {
+				output.write("\n")
+			}
+		} else {
+			try {
+				let text
+				if (result === undefined) {
+					text = "undefined"
+				} else if (typeof result === "string") {
+					text = result
+				} else if (typeof result === "symbol") {
+					text = String(result)
+				} else {
+					text = JSON.stringify(result, undefined, program.ugly ? undefined : 2)
+				}
+				output.write(text)
+				if (!program.ugly && text[text.length - 1] !== "\n") {
+					output.write("\n")
+				}
+			} catch (error) {
+				output.emit("error", error)
+			} finally {
+				output.end()
+			}
 		}
+	} catch (error) {
+		onError(error)
 	}
 }
 
