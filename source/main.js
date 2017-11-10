@@ -4,9 +4,10 @@ import path from "path"
 import program from "commander"
 import stream from "stream"
 import _ from "lodash"
+import JSON5 from "json5"
 
 program
-	.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")).version)
+	.version(JSON5.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")).version)
 	.usage("<javascript>")
 	.option("-r, --raw", "do not attempt to convert data from JSON")
 	.option("-t, --stream", "let stdin to be a stream, not a string")
@@ -43,7 +44,7 @@ if (process.stdin.isTTY) {
 			if (!program.raw) {
 				// attempt to interpret stdin as JSON
 				try {
-					stdin = JSON.parse(stdin)
+					stdin = JSON5.parse(stdin)
 				} catch (e) {
 					// ignore
 				}
@@ -75,7 +76,7 @@ function start(stdin) {
 		if (!program.raw) {
 			// attempt to interpret variable as JSON
 			try {
-				value = JSON.parse(value)
+				value = JSON5.parse(value)
 			} catch (e) {
 				// ignore
 			}
