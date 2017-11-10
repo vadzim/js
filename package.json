@@ -8,7 +8,7 @@
   },
   "contributors": [],
   "bin": {
-    "js": "./bin/js"
+    "js": "./distr/main.js"
   },
   "initial_author": "Marco Aurelio <thecoreh@gmail.com>",
   "author": "Vadzim Zieńka <developer@vadzim.info>",
